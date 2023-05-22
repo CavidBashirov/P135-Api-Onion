@@ -24,11 +24,33 @@ namespace Services.Services
 
         public async Task CreateAsync(EmployeeCreateDto employee) => await _employeeRepo.CreateAsync(_mapper.Map<Employee>(employee));
       
-        public async Task<IEnumerable<EmployeeDto>> GetAllAsync() => _mapper.Map<IEnumerable<EmployeeDto>>(await _employeeRepo.GetAllAsync());
+        public async Task<IEnumerable<EmployeeDto>> GetAllAsync() => _mapper.Map<IEnumerable<EmployeeDto>>(await _employeeRepo.FindAllAsync());
 
         public async Task<EmployeeDto> GetByIdAsync(int? id) => _mapper.Map<EmployeeDto>(await _employeeRepo.GetByIdAsync(id));
 
         public async Task DeleteAsync(int? id) => await _employeeRepo.DeleteAsync(await _employeeRepo.GetByIdAsync(id));
-       
+
+        public async Task UpdateAsync(int? id, EmployeeUpdateDto employee)
+        {
+            if (id is null) throw new ArgumentNullException();
+
+            var existEmployee = await _employeeRepo.GetByIdAsync(id) ?? throw new NullReferenceException();
+
+            _mapper.Map(employee, existEmployee);
+
+            await _employeeRepo.UpdateAsync(existEmployee);
+        }
+
+        public async Task<IEnumerable<EmployeeDto>> SearchAsync(string? searchText) 
+        {
+            if(string.IsNullOrEmpty(searchText))
+                return _mapper.Map<IEnumerable<EmployeeDto>>(await _employeeRepo.FindAllAsync());
+            return _mapper.Map<IEnumerable<EmployeeDto>>(await _employeeRepo.FindAllAsync(m => m.FullName.Contains(searchText)));
+        }
+
+        public async Task SoftDeleteAsync(int? id)
+        {
+            await _employeeRepo.SoftDeleteAsync(id);
+        }
     }
 }

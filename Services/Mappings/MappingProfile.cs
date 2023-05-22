@@ -1,11 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Models;
+using Services.DTOs.Account;
 using Services.DTOs.Employee;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.Mappings
 {
@@ -15,6 +11,9 @@ namespace Services.Mappings
         {
             CreateMap<Employee, EmployeeDto>().ReverseMap();
             CreateMap<EmployeeCreateDto, Employee>();
+            CreateMap<EmployeeUpdateDto, Employee>();
+            CreateMap<RegisterDto, AppUser>();
+            CreateMap<AppUser, UserDto>();
         }
     }
 }

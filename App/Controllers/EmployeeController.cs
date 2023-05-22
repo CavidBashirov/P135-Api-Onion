@@ -66,6 +66,7 @@ namespace App.Controllers
 
         [HttpDelete]
         [Route("{id}")]
+        [ProducesResponseType(statusCode: StatusCodes.Status200OK)]
         [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
@@ -80,6 +81,54 @@ namespace App.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("{id}")]
+        [ProducesResponseType(statusCode: StatusCodes.Status404NotFound)]
+        [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Update([FromRoute] int id,[FromBody] EmployeeUpdateDto employee)
+        {
+            try
+            {
+                await _service.UpdateAsync(id, employee);
+                return Ok();
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [ProducesResponseType(statusCode: StatusCodes.Status200OK, Type = typeof(IEnumerable<EmployeeDto>))]
+        public async Task<IActionResult> Search(string? searchText)
+        {
+            try
+            {
+                return Ok(await _service.SearchAsync(searchText));
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        [ProducesResponseType(statusCode: StatusCodes.Status200OK)]
+        [ProducesResponseType(statusCode: StatusCodes.Status404NotFound)]
+        [ProducesResponseType(statusCode: StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> SoftDelete([FromRoute] int id)
+        {
+            try
+            {
+                await _service.SoftDeleteAsync(id);
+                return Ok();
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
     }
 }

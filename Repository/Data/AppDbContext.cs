@@ -1,10 +1,11 @@
 ﻿using Domain.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace Repository.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -16,6 +17,8 @@ namespace Repository.Data
         {
             //modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
             //modelBuilder.ApplyConfiguration(new CountryConfiguration());
+
+            modelBuilder.Entity<Employee>().HasQueryFilter(m => !m.SoftDelete);
 
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 

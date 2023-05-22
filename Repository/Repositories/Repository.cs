@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Repository.Data;
 using Repository.Repositories.Interfaces;
+using System.Linq.Expressions;
 
 namespace Repository.Repositories
 {
@@ -25,16 +26,16 @@ namespace Repository.Repositories
 
         public async Task DeleteAsync(T entity)
         {
-            if (entity == null) { throw new ArgumentNullException(nameof(entity)); }
+            if (entity == null)  throw new ArgumentNullException(nameof(entity)); 
 
             entities.Remove(entity);
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> FindAllAsync(Expression<Func<T, bool>> expression = null)
         {
-            return await entities.ToListAsync();
+            return expression != null ? await entities.Where(expression).ToListAsync() : await entities.ToListAsync();
         }
 
         public async Task<T> GetByIdAsync(int? id)
@@ -48,9 +49,23 @@ namespace Repository.Repositories
             return entity;
         }
 
-        public Task UpdateAsync(T entity)
+        public async Task SoftDeleteAsync(int? id)
         {
-            throw new NotImplementedException();
+            if (id == null) throw new ArgumentNullException();
+
+            T? entity = await entities.FindAsync(id) ?? throw new NullReferenceException("Notfound data");
+
+            entity.SoftDelete = true;
+
+            await _context.SaveChangesAsync();
+
+        }
+
+        public async Task UpdateAsync(T entity)
+        {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
+            entities.Update(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }

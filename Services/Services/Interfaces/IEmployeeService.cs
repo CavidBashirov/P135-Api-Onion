@@ -13,5 +13,8 @@ namespace Services.Services.Interfaces
         Task<EmployeeDto> GetByIdAsync(int? id);
         Task CreateAsync(EmployeeCreateDto employee);
         Task DeleteAsync(int? id);
+        Task UpdateAsync(int? id, EmployeeUpdateDto employee);
+        Task<IEnumerable<EmployeeDto>> SearchAsync(string? searchText);
+        Task SoftDeleteAsync(int? id);
     }
 }
